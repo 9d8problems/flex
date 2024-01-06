@@ -14,6 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Install buildozer
+      - name: Install buildozer
+        run: |
+          pip3 install --user --upgrade buildozer
+
+      # Print Android Home
+      - name: Print Android Home
+        run: echo $ANDROID_HOME
+
       # Accept Android SDK Licenses
       - name: Accept Android SDK Licenses
         run: |
@@ -21,17 +30,19 @@ jobs:
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_HOME/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
 
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v2
+      # Cache Buildozer global directory
+      - uses: actions/cache@v2
         with:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }}
 
+      # Cache Buildozer directory
       - uses: actions/cache@v2
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
 
+      # Build with Buildozer
       - name: Build with Buildozer
         run: |
           buildozer android debug
@@ -39,6 +50,7 @@ jobs:
           echo "Listing contents:"
           ls -al
 
+      # Upload artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
